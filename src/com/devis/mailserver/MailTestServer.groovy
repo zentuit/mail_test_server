@@ -47,8 +47,6 @@ class MailTestServer {
 	}
 
 	private poll() {
-		// keep track of the emails we've received already
-		// so we can skip over them
 		while(true) {
 			outputEmails()
 		}
