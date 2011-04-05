@@ -11,10 +11,19 @@ class MailTestServer {
 
 	private int port = 5555
 	private int sleep = 2000
+	
+	def server
+	def writer
 
 	MailTestServer() {
 		SimpleSmtpServer.metaClass.getEmails = { ->
 			return Collections.unmodifiableList(delegate.receivedMail)
+		}
+
+		writer = new OutputStreamWriter(System.out)
+		def sep = System.getProperty("line.separator")
+		writer.metaClass.writeln = { line ->
+			delegate.write("${line}${sep}")
 		}
 	}
 
@@ -24,23 +33,33 @@ class MailTestServer {
 	}
 
 	private MailTestServer run() {
-		SimpleSmtpServer server = SimpleSmtpServer.start(port)
+		SimpleSmtpServer server = startServer()
 
 
 		Runtime runtime = Runtime.getRuntime()
-		Thread shutdown = new OutputSmtpServerThread(server)
+		Thread shutdown = new OutputSmtpServerThread(server, writer)
 
 		runtime.addShutdownHook(shutdown)
 
 		def count = 0
 
 		while(true) {
-			Thread.sleep(sleep)
-			def emails = server.getEmails()
-			emails[count..<emails.size()].each { println it }
-			count = emails.size()	
+			count = outputEmails(count)
 		}
 		return this
+	}
+
+	private int outputEmails(int count) {
+		Thread.sleep(sleep)
+		def emails = server.getEmails()
+		emails[count..<emails.size()].each { writer.writeln "${it}" }
+		count = emails.size()
+		return count
+	}
+	
+	private def startServer() {
+		server = SimpleSmtpServer.start(port)
+		return server
 	}
 
 }

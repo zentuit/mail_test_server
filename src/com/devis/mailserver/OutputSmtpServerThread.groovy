@@ -9,12 +9,15 @@ package com.devis.mailserver
 class OutputSmtpServerThread extends Thread {
 
     def server
+	def writer
     
-    OutputSmtpServerThread(server) { this.server = server }
+    OutputSmtpServerThread(server, writer) { 
+		this.server = server
+		this.writer = writer 
+	}
 
     public void run() {
-        server.getReceivedEmail().each { println it }
-		
+		server.getReceivedEmail().each { writer.writeln "${it}" }
     }
 
     

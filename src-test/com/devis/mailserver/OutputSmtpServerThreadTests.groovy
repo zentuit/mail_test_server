@@ -12,12 +12,20 @@ class OutputSmtpServerThreadTests {
 		server.getReceivedEmail = {
 			return ["a", "b", "c"]
 		}
+
+		def sep = System.getProperty("line.separator")
+		StringWriter.metaClass.writeln = { line ->
+			delegate.write("${line}${sep}")
+		}
 		
-		def osst = new OutputSmtpServerThread(server)
+		Writer writer = new StringWriter()
+
+		def osst = new OutputSmtpServerThread(server, writer)
 		
 		osst.run()
 		
-		fail ("need to refactor to make it testable")
+		
+		assert writer.toString() == "a${sep}b${sep}c${sep}"
 		
 	}
 
