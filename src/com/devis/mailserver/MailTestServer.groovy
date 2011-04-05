@@ -57,6 +57,7 @@ class MailTestServer {
 	private int outputEmails() {
 		Thread.sleep(sleep)
 		def emails = getEmails()
+		// TODO : make the each a closure set externally so we can have more flexibility
 		emails.each { writer.writeln "${it}" }
 		return emails.size()
 	}
