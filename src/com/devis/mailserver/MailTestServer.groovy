@@ -1,5 +1,5 @@
 /*
-*
+*  MailTestServer is a standalone 'mock' SMTP server to be used during testing
 */
 package com.devis.mailserver
 
