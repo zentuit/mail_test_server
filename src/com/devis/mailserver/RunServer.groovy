@@ -23,8 +23,19 @@ class RunServer {
 		def sleep = (options.s) ?: sleep
 		
 		MailTestServer instance = new MailTestServer(port, sleep)
-		
+
+		def writer = new SystemOutWriter()
+		writer.writeln("Starting on port: ${port}")
+		instance.writer = writer
+
 		instance.run()
 	}
 
+}
+
+
+class SystemOutWriter {
+	public void writeln(line) {
+		System.out.println(line.toString())
+	}
 }

@@ -31,8 +31,6 @@ class MailTestServer {
 			return Collections.unmodifiableList(delegate.receivedMail)
 		}
 
-		writer = new SystemOutWriter()
-		writer.writeln("Starting on port: ${port}")
 	}
 	
 	public MailTestServer run() {
@@ -76,12 +74,6 @@ class MailTestServer {
 		return server
 	}
 
-}
-
-class SystemOutWriter {
-	public void writeln(line) {
-		System.out.println(line.toString())
-	}
 }
 
 
