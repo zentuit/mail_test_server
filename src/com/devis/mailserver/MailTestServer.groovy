@@ -13,6 +13,8 @@ class MailTestServer {
 	private int sleep = 2000 //milliseconds
 	private int count = 0
 	
+	def outputClosure = { writer.writeln "${it}" }
+	
 	def server
 	def writer
 
@@ -56,7 +58,7 @@ class MailTestServer {
 		Thread.sleep(sleep)
 		def emails = getEmails()
 		// TODO : make the each a closure set externally so we can have more flexibility
-		emails.each { writer.writeln "${it}" }
+		emails.each(outputClosure) 
 		return emails.size()
 	}
 
