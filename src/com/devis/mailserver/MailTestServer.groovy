@@ -21,11 +21,7 @@ class MailTestServer {
 			return Collections.unmodifiableList(delegate.receivedMail)
 		}
 
-		writer = new OutputStreamWriter(System.out)
-		def sep = System.getProperty("line.separator")
-		writer.metaClass.writeln = { line ->
-			delegate.write("${line}${sep}")
-		}
+		writer = new SystemOutWriter()
 		writer.writeln("Starting")
 	}
 
@@ -51,7 +47,7 @@ class MailTestServer {
 		// keep track of the emails we've received already
 		// so we can skip over them
 		while(true) {
-			count = outputEmails()
+			outputEmails()
 		}
 	}
 
@@ -77,5 +73,10 @@ class MailTestServer {
 
 }
 
+class SystemOutWriter {
+	public void writeln(line) {
+		System.out.println(line.toString())
+	}
+}
 
 

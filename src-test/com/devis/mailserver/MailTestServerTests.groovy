@@ -133,4 +133,50 @@ class MailTestServerTests {
 		assert data[1..2] == actual
 
 	}
+
+	@Test
+	public void test_getEmails_returns_correct_slice_with_emails_added() {
+		def first = ["first"]
+		def added = ["first", "second"]
+		mts.server = new Expando()
+		mts.server.getEmails = { ->
+			return first
+		}
+		mts.count = 0
+		
+		def actual = mts.getEmails()
+		assert first == actual
+		assert 1 == mts.count
+		
+		mts.server.getEmails = { ->
+			return added
+		}
+
+		actual = mts.getEmails()
+		assert [added[1]] == actual
+		assert 2 == mts.count
+	}
+
+	@Test
+	public void test_outputEmails_returns_correct_count_with_emails_added() {
+		def first = ["first"]
+		def added = ["first", "second"]
+		mts.server = new Expando()
+		mts.server.getEmails = { ->
+			return first
+		}
+		mts.count = 0
+		
+		def actual = mts.outputEmails()
+		assert 1 == actual
+		assert 1 == mts.count
+		
+		mts.server.getEmails = { ->
+			return added
+		}
+
+		actual = mts.outputEmails()
+		assert 1 == actual
+		assert 2 == mts.count
+	}
 }
