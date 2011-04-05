@@ -25,12 +25,7 @@ class MailTestServer {
 		writer.writeln("Starting")
 	}
 
-	public static void main(String [] args) {
-		MailTestServer instance = new MailTestServer()
-		instance.run()
-	}
-
-	private MailTestServer run() {
+	public MailTestServer run() {
 		startServer()
 		addOutputShutdownHook()
 		poll()
