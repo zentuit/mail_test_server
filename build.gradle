@@ -1,1 +1,36 @@
-defaultTasks 'clean', 'run'
+apply plugin: 'eclipse'
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    groovy group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.8'
+    testCompile group: 'junit', name: 'junit', version: '4.8.2'
+	compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+mainClassName = "com.devis.mailserver.RunServer"
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+        groovy {
+            srcDir 'src'
+        }
+    }
+    test {
+        java {
+            srcDir 'src-test'
+        }
+        groovy {
+            srcDir 'src-test'
+        }
+    }
+}
+
