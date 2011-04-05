@@ -10,21 +10,31 @@ import com.dumbster.smtp.*
 class MailTestServer {
 
 	private int port = 5555
-	private int sleep = 2000
+	private int sleep = 2000 //milliseconds
 	private int count = 0
 	
 	def server
 	def writer
 
 	MailTestServer() {
+		initialize()
+	}
+
+	MailTestServer(port, sleep) {
+		this.port = port
+		this.sleep = sleep
+		initialize()
+	}
+
+	private def initialize() {
 		SimpleSmtpServer.metaClass.getEmails = { ->
 			return Collections.unmodifiableList(delegate.receivedMail)
 		}
 
 		writer = new SystemOutWriter()
-		writer.writeln("Starting")
+		writer.writeln("Starting on port: ${port}")
 	}
-
+	
 	public MailTestServer run() {
 		startServer()
 		addOutputShutdownHook()
@@ -61,7 +71,7 @@ class MailTestServer {
 		return results
 	}	
 
-		private def startServer() {
+	private def startServer() {
 		server = SimpleSmtpServer.start(port)
 		return server
 	}
