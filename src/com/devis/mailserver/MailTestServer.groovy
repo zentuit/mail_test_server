@@ -11,6 +11,7 @@ class MailTestServer {
 
 	private int port = 5555
 	private int sleep = 2000
+	private int count = 0
 	
 	def server
 	def writer
@@ -25,6 +26,7 @@ class MailTestServer {
 		writer.metaClass.writeln = { line ->
 			delegate.write("${line}${sep}")
 		}
+		writer.writeln("Starting")
 	}
 
 	public static void main(String [] args) {
@@ -33,31 +35,42 @@ class MailTestServer {
 	}
 
 	private MailTestServer run() {
-		SimpleSmtpServer server = startServer()
-
-
-		Runtime runtime = Runtime.getRuntime()
-		Thread shutdown = new OutputSmtpServerThread(server, writer)
-
-		runtime.addShutdownHook(shutdown)
-
-		def count = 0
-
-		while(true) {
-			count = outputEmails(count)
-		}
+		startServer()
+		addOutputShutdownHook()
+		poll()
 		return this
 	}
 
-	private int outputEmails(int count) {
-		Thread.sleep(sleep)
-		def emails = server.getEmails()
-		emails[count..<emails.size()].each { writer.writeln "${it}" }
-		count = emails.size()
-		return count
+	private addOutputShutdownHook() {
+		Runtime runtime = Runtime.getRuntime()
+		Thread shutdown = new OutputSmtpServerThread(server, writer)
+		runtime.addShutdownHook(shutdown)
 	}
-	
-	private def startServer() {
+
+	private poll() {
+		// keep track of the emails we've received already
+		// so we can skip over them
+		while(true) {
+			count = outputEmails()
+		}
+	}
+
+	private int outputEmails() {
+		Thread.sleep(sleep)
+		def emails = getEmails()
+		emails.each { writer.writeln "${it}" }
+		return emails.size()
+	}
+
+	private def getEmails() {
+		def emails = server.getEmails()
+		// skip over emails we've output
+		def results = emails[count..<emails.size()]
+		count = emails.size()
+		return results
+	}	
+
+		private def startServer() {
 		server = SimpleSmtpServer.start(port)
 		return server
 	}

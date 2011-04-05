@@ -42,9 +42,24 @@ class MailTestServerTests {
 	@Test
 	public void testRun() {
 		def mts = new MailTestServer()
-	
-		fail("still have infinite loop")	
-//		mts.run()
+		
+		def calledServerSetup = false
+		mts.metaClass.startServer = { ->
+			calledServerSetup = true
+		}
+		def calledHook = false
+		mts.metaClass.addOutputShutdownHook = { ->
+			calledHook = true
+		}
+		def calledPoll = false
+		mts.metaClass.poll = { ->
+			calledPoll = true
+		}
+
+		mts.run()
+		assert calledServerSetup
+		assert calledHook
+		assert calledPoll
 		
 	}
 	
@@ -55,10 +70,12 @@ class MailTestServerTests {
 		mts.server.getEmails = { ->
 			return data
 		}
+		mts.count = 0
 		
-		def actual = mts.outputEmails(0)
+		def actual = mts.outputEmails()
 		assert 3 == actual
 		assert "${data[0]}${sep}${data[1]}${sep}${data[2]}${sep}" == mts.writer.toString()
+		assert 3 == mts.count
 	}
 	
 	@Test
@@ -68,10 +85,52 @@ class MailTestServerTests {
 		mts.server.getEmails = { ->
 			return data
 		}
+		mts.count = 2
 		
-		def actual = mts.outputEmails(2)
-		assert 3 == actual
+		def actual = mts.outputEmails()
+		assert 1 == actual
 		assert "${data[2]}${sep}" == mts.writer.toString()
+		assert 3 == mts.count
 	}
 
+	@Test
+	public void test_outputEmails_with_no_emails() {
+		
+		mts.server = new Expando()
+		mts.server.getEmails = { ->
+			return []
+		}
+		mts.count = 0
+		
+		def actual = mts.outputEmails()
+		assert 0 == actual
+		assert "" == mts.writer.toString()
+		assert 0 == mts.count
+	}
+
+	@Test
+	public void test_getEmails_returns_correct_slice_with_count_0() {
+		mts.server = new Expando()
+		mts.server.getEmails = { ->
+			return data
+		}
+		mts.count = 0
+		
+		def actual = mts.getEmails()
+		assert data == actual
+
+	}
+
+	@Test
+	public void test_getEmails_returns_correct_slice_with_count_1() {
+		mts.server = new Expando()
+		mts.server.getEmails = { ->
+			return data
+		}
+		mts.count = 1
+		
+		def actual = mts.getEmails()
+		assert data[1..2] == actual
+
+	}
 }
