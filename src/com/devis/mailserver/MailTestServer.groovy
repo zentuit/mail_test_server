@@ -56,17 +56,18 @@ class MailTestServer {
 
 	private int outputEmails() {
 		Thread.sleep(sleep)
-		def emails = getEmails()
+		def emails = getNewEmails()
 		// TODO : make the each a closure set externally so we can have more flexibility
 		emails.each(outputClosure) 
 		return emails.size()
 	}
 
-	private def getEmails() {
+	private def getNewEmails() {
 		def emails = server.getEmails()
-		// skip over emails we've output
-		def results = emails[count..<emails.size()]
-		count = emails.size()
+		def size = emails.size()
+		// skip over emails we've already counted
+		def results = emails[count..<size]
+		count = size
 		return results
 	}	
 

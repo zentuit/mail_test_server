@@ -116,7 +116,7 @@ class MailTestServerTests {
 		}
 		mts.count = 0
 		
-		def actual = mts.getEmails()
+		def actual = mts.getNewEmails()
 		assert data == actual
 
 	}
@@ -129,7 +129,7 @@ class MailTestServerTests {
 		}
 		mts.count = 1
 		
-		def actual = mts.getEmails()
+		def actual = mts.getNewEmails()
 		assert data[1..2] == actual
 
 	}
@@ -144,7 +144,7 @@ class MailTestServerTests {
 		}
 		mts.count = 0
 		
-		def actual = mts.getEmails()
+		def actual = mts.getNewEmails()
 		assert first == actual
 		assert 1 == mts.count
 		
@@ -152,7 +152,7 @@ class MailTestServerTests {
 			return added
 		}
 
-		actual = mts.getEmails()
+		actual = mts.getNewEmails()
 		assert [added[1]] == actual
 		assert 2 == mts.count
 	}
