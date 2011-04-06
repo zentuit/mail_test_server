@@ -1,10 +1,30 @@
 package com.devis.mailserver
 
 class RunServer {
-	private static int port = 5555
-	private static int sleep = 2000 //milliseconds
+	private static String port = "5555"
+	private static String sleep = "2000" //milliseconds
 
 	public static void main(String [] args) {
+		
+		println "args: ${args}"
+		
+		def params = processParameters(args)
+		if (!params) { return }
+
+		def port = params[0]
+		def sleep = params[1]
+				
+		MailTestServer instance = new MailTestServer(port, sleep)
+
+		def writer = new SystemOutWriter()
+		writer.writeln("Starting on port: ${port}")
+		instance.writer = writer
+
+		instance.run()
+	}
+
+	
+	def static processParameters(String [] args) {
 		def cli = new CliBuilder(usage: 'RunServer [-h] [-p port] [-s sleep (ms)]')
 		
 		cli.with {
@@ -16,21 +36,15 @@ class RunServer {
 		def options = cli.parse(args)
 		if (!options || options.h) {
 			cli.usage()
-			return
+			return []
 		}
 
 		def port = (options.p) ?: port
 		def sleep = (options.s) ?: sleep
 		
-		MailTestServer instance = new MailTestServer(port, sleep)
+		return [Integer.valueOf(port), Integer.valueOf(sleep)]
 
-		def writer = new SystemOutWriter()
-		writer.writeln("Starting on port: ${port}")
-		instance.writer = writer
-
-		instance.run()
-	}
-
+	} 
 }
 
 
