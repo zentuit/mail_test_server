@@ -16,6 +16,16 @@ class RunServerTests {
 	}
 	
 	@Test
+	public void test_port_parameter_full_name() {
+		def param = ["-port", "6677"] as String[]
+		
+		def results = RunServer.processParameters(param)
+		
+		assert 6677 == results.port
+		assert !results.sleep
+	}
+	
+	@Test
 	public void test_port_parameter_with_no_parameter() {
 		def param = [] as String[]
 		
@@ -36,13 +46,45 @@ class RunServerTests {
 	}
 	
 	@Test
-	public void test_sleep_parameter_with_no_parameter() {
-		def param = [] as String[]
+	public void test_config_parameter() {
+		def path = "./my/path/myconfig.groovy"
+		def param = ["-c", path] as String[]
 		
-//		def results = RunServer.processParameters(param)
+		def results = RunServer.processParameters(param)
 		
-//		assert Integer.valueOf(RunServer.sleep) == results.sleep
-//		assert Integer.valueOf(RunServer.port) == results.port
+		assert path == results.config
 	}
-
+	
+	@Test
+	public void test_config_parameter_full_name() {
+		def path = "./my/path/myconfig.groovy"
+		def param = ["-config", path] as String[]
+		
+		def results = RunServer.processParameters(param)
+		
+		assert path == results.config
+	}
+	
+	@Test
+	public void test_config_file_port_setting() {
+		def filename = "./resources-test/just_port.groovy"
+		
+		def results = RunServer.processConfigFile(filename)
+		
+		assert 7777 == results.port
+		
+	}
+	
+	@Test
+	public void test_config_file_sleep_setting() {
+		def filename = "./resources-test/just_sleep.groovy"
+		
+		def results = RunServer.processConfigFile(filename)
+		
+		assert 1000 == results.sleep
+		
+	}
+	
+	
+	
 }
