@@ -93,6 +93,18 @@ class RunServerTests {
 		
 	}
 	
+	@Test
+	public void test_config_file_no_filename() {
+		def filename = null
+		
+		def results = runServer.processConfigFile(filename)
+		
+		assert 1000 == results.sleep
+		assert 4567 == results.port
+		assert 2525 == results.forward
+		
+	}
+	
 	
 	
 }

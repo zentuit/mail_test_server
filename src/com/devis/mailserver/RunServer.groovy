@@ -9,9 +9,10 @@ class RunServer {
 	
 	def private availableOptions = [
 			[opt: "h", longOpt: 'help', description:'Show usage information'],
-			[opt: "p", longOpt: 'port', args:1, argName:'port', description:"Port to listen on (default ${defaultPort}})"],
-			[opt: "s", longOpt: 'sleep', args:1, argName:'sleep', description:"Number of milliseconds to wait while polling (default ${defaultSleep})"],
+			[opt: "p", longOpt: 'port', args:1, argName:'port', description:"Port to listen on (default ${defaultPort}})", isInt:true],
+			[opt: "s", longOpt: 'sleep', args:1, argName:'sleep', description:"Number of milliseconds to wait while polling (default ${defaultSleep})", isInt:true],
 			[opt: "c", longOpt: 'config', args:1, argName: 'filename', description:"Configuration file (default ${defaultConfig})"],
+			[opt: "f", longOpt: 'forward', args:1, argName: 'forward', description:"Mail port to forward, if needed", isInt:true],
 		]
 
 
@@ -43,7 +44,7 @@ class RunServer {
 	}
 	
 	def processParameters(String [] args) {
-		def cli = new CliBuilder(usage: 'RunServer [-h] [-p port] [-s sleep (ms)] [-c config file')
+		def cli = new CliBuilder(usage: 'RunServer [options]', header: 'Options')
 
 		availableOptions.each {
 			def opt = new Option(it.opt, it.description)
@@ -52,13 +53,6 @@ class RunServer {
 			if (it.argName) { opt.argName = it.argName }
 			cli << opt
 		}
-		
-//		cli.with {
-//			h longOpt: 'help', 'Show usage information'
-//			p longOpt: 'port', args:1, argName:'port', "Port to listen on (default ${defaultPort}})"
-//			s longOpt: 'sleep', args:1, argName:'sleep', "Number of milliseconds to wait while polling (default ${defaultSleep})"
-//			c longOpt: 'config', args:1, argName: 'filename', "Configuration file (default ${defaultConfig})"
-//		}
 		
 		def options = cli.parse(args)
 		
@@ -73,12 +67,18 @@ class RunServer {
 	} 
 	
 	def convertToInteger(options) {
-		def port = (options.p) ? Integer.valueOf(options.p) : null
-		def sleep = (options.s) ? Integer.valueOf(options.s) : null
-		return [port:port, sleep:sleep]
+		def results = [:]
+		availableOptions.each {
+			if (it.isInt) {
+				def opt = (options[it.opt]) ? Integer.valueOf(options[it.opt]) : null
+				results[it.longOpt] = opt
+			}
+		}
+		return results
 	}
 	
 	def processConfigFile(String filename) {
+		filename = (filename) ?: defaultConfig
 		def file = new File(filename).toURL()
 		def config = new ConfigSlurper().parse(file)
 		
