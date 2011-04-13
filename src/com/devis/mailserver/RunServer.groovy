@@ -53,7 +53,6 @@ class RunServer {
 		def results = [:]
 		availableOptions.each {
 			def value = (primary[it.longOpt]) ?: secondary[it.longOpt]
-			println "${it.longOpt} : ${primary[it.longOpt]} ::: ${secondary[it.longOpt]} ::: ${value}"
 			if (value) {
 				results[it.longOpt] = value
 			}
@@ -80,8 +79,6 @@ class RunServer {
 		}
 
 		return convertToLongName(options)
-//		def integerOptions = convertToInteger(options)
-//		return integerOptions + [config:options.c]
 
 	} 
 	
@@ -106,25 +103,34 @@ class RunServer {
 	}
 	
 	def processConfigFile(filename) {
-		if (!filename) {return [:]}
-		
-		def file = new File(filename).toURL()
-		def config = new ConfigSlurper().parse(file)
+		filename = (filename) ?: defaultConfig
 		
 		def results = [:]
-		// config file has full name, but all the processing
-		// is done with the one letter options
-		config.each {k,v ->
-			// we need to have all the values as strings because
-			// the cmd line values are strings; so batch 
-			// converting to integer is easier
-			results[k] = v.toString()
-		}
+		try {
+			def file = new File(filename).toURL()
+			def config = new ConfigSlurper().parse(file)
+			
+			// config file has full name, but all the processing
+			// is done with the one letter options
+			config.each {k,v ->
+				// we need to have all the values as strings because
+				// the cmd line values are strings; so batch 
+				// converting to integer is easier
+				results[k] = v.toString()
+			}
 
-		println "config results: ${results}"
-		println ""
+		} catch (java.io.FileNotFoundException ex) {
+			//TODO log error here
+			//TODO this availableOptions.each is repeated in multiple places
+			// set to defaults
+			availableOptions.each {
+				def defaultValue = it["default"]
+				if (defaultValue) {
+					results[it.longOpt] = defaultValue
+				}
+			}
+		}
 		return results
-//		return convertToInteger(results)
 	}
 	
 }
