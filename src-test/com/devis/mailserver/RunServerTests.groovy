@@ -19,7 +19,7 @@ class RunServerTests {
 		
 		def results = runServer.processParameters(param)
 		
-		assert 6677 == results.port
+		assert "6677" == results.port
 		assert !results.sleep
 	}
 	
@@ -29,7 +29,7 @@ class RunServerTests {
 		
 		def results = runServer.processParameters(param)
 		
-		assert 6677 == results.port
+		assert "6677" == results.port
 		assert !results.sleep
 	}
 	
@@ -49,7 +49,7 @@ class RunServerTests {
 		
 		def results = runServer.processParameters(param)
 		
-		assert 5000 == results.sleep
+		assert "5000" == results.sleep
 		assert !results.port
 	}
 	
@@ -77,9 +77,10 @@ class RunServerTests {
 	public void test_config_file_port_setting() {
 		def filename = "./resources-test/just_port.groovy"
 		
+		println "test_config_file_port_setting"
 		def results = runServer.processConfigFile(filename)
 		
-		assert 7777 == results.port
+		assert "7777" == results.port
 		
 	}
 	
@@ -87,9 +88,10 @@ class RunServerTests {
 	public void test_config_file_sleep_setting() {
 		def filename = "./resources-test/just_sleep.groovy"
 		
+		println "test_config_file_sleep_setting"
 		def results = runServer.processConfigFile(filename)
 		
-		assert 1000 == results.sleep
+		assert "3000" == results.sleep
 		
 	}
 	
@@ -98,13 +100,35 @@ class RunServerTests {
 		def filename = null
 		
 		def results = runServer.processConfigFile(filename)
-		
-		assert 1000 == results.sleep
-		assert 4567 == results.port
-		assert 2525 == results.forward
+
+		assert [:] == results
 		
 	}
 	
+	@Test
+	public void test_determine_server_params_with_mixed_cmdline_and_config() {
+		def filename = "./resources-test/just_sleep.groovy"
+		def params = ["-port", "6677", "-c", filename] as String[]
+		
+		println "test_determine_server_params_with_mixed_cmdline_and_config"
+		def results = runServer.determineServerParams(params)
+		
+		assert 6677 == results.port
+		assert 3000 == results.sleep
+		
+	}
+	
+	@Test
+	public void test_determine_server_params_with_no_cmdline() {
+		def params = [] as String[]
+		
+		println "test_determine_server_params_with_mixed_cmdline_and_config"
+		def results = runServer.determineServerParams(params)
+		
+		assert 5555 == results.port
+		assert 2000 == results.sleep
+		
+	}
 	
 	
 }

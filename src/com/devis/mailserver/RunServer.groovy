@@ -3,28 +3,33 @@ package com.devis.mailserver
 import org.apache.commons.cli.Option
 
 class RunServer {
-	private static String defaultPort = "5555"
-	private static String defaultSleep = "2000" //milliseconds
+	private static int defaultPort = 5555
+	private static int defaultSleep = 2000 //milliseconds
 	private static String defaultConfig = "./resources/config.groovy"
 	
 	def private availableOptions = [
 			[opt: "h", longOpt: 'help', description:'Show usage information'],
-			[opt: "p", longOpt: 'port', args:1, argName:'port', description:"Port to listen on (default ${defaultPort}})", isInt:true],
-			[opt: "s", longOpt: 'sleep', args:1, argName:'sleep', description:"Number of milliseconds to wait while polling (default ${defaultSleep})", isInt:true],
-			[opt: "c", longOpt: 'config', args:1, argName: 'filename', description:"Configuration file (default ${defaultConfig})"],
-			[opt: "f", longOpt: 'forward', args:1, argName: 'forward', description:"Mail port to forward, if needed", isInt:true],
+			[opt: "p", longOpt: 'port', args:1, argName:'port', 
+				description:"Port to listen on (default ${defaultPort}})", default:defaultPort, isInt:true],
+			[opt: "s", longOpt: 'sleep', args:1, argName:'sleep', 
+				description:"Number of milliseconds to wait while polling (default ${defaultSleep})", default:defaultSleep, isInt:true],
+			[opt: "c", longOpt: 'config', args:1, argName: 'filename', 
+				description:"Configuration file (default ${defaultConfig})", default:defaultConfig],
+			[opt: "f", longOpt: 'forward', args:1, argName: 'forward', 
+				description:"Mail port to forward, if needed", isInt:true],
 		]
 
+	def static optionResults = [:]
 
 	public static void main(String [] args) {
 		
 		def server = new RunServer()
 		
-		def options = server.determineServerParams(args)
-		if (!options) { return }
+		optionResults = server.determineServerParams(args)
+		if (!optionResults) { return }
 
-		def port = (options.p) ?: defaultPort
-		def sleep = (options.s) ?: defaultSleep
+		def port = (optionResults.p) ?: defaultPort
+		def sleep = (optionResults.s) ?: defaultSleep
 		
 		MailTestServer instance = new MailTestServer(port, sleep)
 
@@ -38,12 +43,25 @@ class RunServer {
 	def determineServerParams(String [] args) {
 		def cmdLineOptions = processParameters(args)
 		
-		def configOptions = processConfigFile(cmdLineOptions.c)
+		def configOptions = processConfigFile(cmdLineOptions.config)
 		
-		def options = configOptions + cmdLineOptions
+		optionResults = combineOptions(cmdLineOptions, configOptions)
+		return convertToInteger(optionResults)
 	}
 	
-	def processParameters(String [] args) {
+	def private combineOptions(primary, secondary) {
+		def results = [:]
+		availableOptions.each {
+			def value = (primary[it.longOpt]) ?: secondary[it.longOpt]
+			println "${it.longOpt} : ${primary[it.longOpt]} ::: ${secondary[it.longOpt]} ::: ${value}"
+			if (value) {
+				results[it.longOpt] = value
+			}
+		}
+		return results
+	}
+	
+	def private processParameters(String [] args) {
 		def cli = new CliBuilder(usage: 'RunServer [options]', header: 'Options')
 
 		availableOptions.each {
@@ -61,35 +79,52 @@ class RunServer {
 			return [:]
 		}
 
-		def integerOptions = convertToInteger(options)
-		return integerOptions + [config:options.c]
+		return convertToLongName(options)
+//		def integerOptions = convertToInteger(options)
+//		return integerOptions + [config:options.c]
 
 	} 
 	
-	def convertToInteger(options) {
+	def convertToLongName(options) {
 		def results = [:]
 		availableOptions.each {
-			if (it.isInt) {
-				def opt = (options[it.opt]) ? Integer.valueOf(options[it.opt]) : null
-				results[it.longOpt] = opt
+			if (options[it.opt]) {
+				results[it.longOpt] = options[it.opt]
 			}
 		}
 		return results
 	}
 	
-	def processConfigFile(String filename) {
-		filename = (filename) ?: defaultConfig
+	def convertToInteger(options) {
+		availableOptions.each {
+			def value = options[it.longOpt]
+			if (it.isInt && value) {
+				options[it.longOpt] = Integer.valueOf(value)
+			}
+		}
+		return options
+	}
+	
+	def processConfigFile(filename) {
+		if (!filename) {return [:]}
+		
 		def file = new File(filename).toURL()
 		def config = new ConfigSlurper().parse(file)
 		
-		def params = [:]
+		def results = [:]
 		// config file has full name, but all the processing
 		// is done with the one letter options
 		config.each {k,v ->
-			params[k[0]] = v
+			// we need to have all the values as strings because
+			// the cmd line values are strings; so batch 
+			// converting to integer is easier
+			results[k] = v.toString()
 		}
 
-		return convertToInteger(params)
+		println "config results: ${results}"
+		println ""
+		return results
+//		return convertToInteger(results)
 	}
 	
 }
