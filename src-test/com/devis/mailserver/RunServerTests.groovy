@@ -11,7 +11,8 @@ class RunServerTests {
 		
 		def results = RunServer.processParameters(param)
 		
-		assert 6677 == results[0]
+		assert 6677 == results.port
+		assert !results.sleep
 	}
 	
 	@Test
@@ -20,7 +21,8 @@ class RunServerTests {
 		
 		def results = RunServer.processParameters(param)
 		
-		assert Integer.valueOf(RunServer.port) == results[0]
+		assert !results.port
+		assert !results.sleep
 	}
 	
 	@Test
@@ -29,16 +31,18 @@ class RunServerTests {
 		
 		def results = RunServer.processParameters(param)
 		
-		assert 5000 == results[1]
+		assert 5000 == results.sleep
+		assert !results.port
 	}
 	
 	@Test
 	public void test_sleep_parameter_with_no_parameter() {
 		def param = [] as String[]
 		
-		def results = RunServer.processParameters(param)
+//		def results = RunServer.processParameters(param)
 		
-		assert Integer.valueOf(RunServer.sleep) == results[1]
+//		assert Integer.valueOf(RunServer.sleep) == results.sleep
+//		assert Integer.valueOf(RunServer.port) == results.port
 	}
 
 }
