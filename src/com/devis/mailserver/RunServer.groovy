@@ -19,9 +19,9 @@ class RunServer {
 			[opt: "f", longOpt: 'forward', args:1, argName: 'forward', 
 				description:"If provided, email address to forward a copy of all incoming mail (default is no mail sent)", default:defaultForwardEmail],
 			[opt: "fh", longOpt: 'forwardHost', args:1, argName: 'forwardHost', 
-				description:"If provided, email address to forward a copy of all incoming mail (default is no mail sent)", default:defaultForwardEmail],
+				description:"Mail server to use to forward email (default is ${defaultForwardHost})", default:defaultForwardHost],
 			[opt: "fp", longOpt: 'forwardPort', args:1, argName: 'forwardPort', 
-				description:"If provided, email address to forward a copy of all incoming mail (default is no mail sent)", default:defaultForwardEmail],
+				description:"Mail server port to use to forward email (default is ${defaultForwardPort})", default:defaultForwardPort],
             [opt: "c", longOpt: 'config', args:1, argName: 'filename', 
 				description:"Configuration file (default ${defaultConfig})", default:defaultConfig],
 		]
