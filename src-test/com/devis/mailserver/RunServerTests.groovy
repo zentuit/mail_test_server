@@ -90,7 +90,46 @@ class RunServerTests {
 		assert !results.port
         assert !results.sleep
 	}
-	
+    
+	@Test
+	public void test_forward_host_parameter() {
+		def param = ["-fh", "localhost"] as String[]
+		
+		def results = runServer.processParameters(param)
+		
+		assert "localhost" == results.forwardHost
+        assert !results.port
+		assert !results.sleep
+        assert !results.forward
+        assert !results.forwardPort
+	}
+    
+	@Test
+	public void test_forward_host_parameter_full_name() {
+		def param = ["-forwardHost", "localhost"] as String[]
+		
+		def results = runServer.processParameters(param)
+		
+		assert "localhost" == results.forwardHost
+        assert !results.port
+		assert !results.sleep
+        assert !results.forward
+        assert !results.forwardPort
+	}
+    
+	@Test
+	public void test_forward_port_parameter() {
+		def param = ["-fp", "25"] as String[]
+		
+		def results = runServer.processParameters(param)
+		
+		assert "25" == results.forwardPort
+        assert !results.port
+		assert !results.sleep
+        assert !results.forward
+        assert !results.forwardHost
+	}
+		
 	@Test
 	public void test_config_parameter() {
 		def path = "./my/path/myconfig.groovy"

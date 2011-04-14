@@ -1,3 +1,5 @@
 port = 4567
 sleep = 1000
-forward = 2525
+forward = "devisqa01@devis.com"
+forwardhost = "localhost"
+forwardport = 25

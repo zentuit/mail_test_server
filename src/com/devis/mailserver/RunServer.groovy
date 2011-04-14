@@ -5,7 +5,9 @@ import org.apache.commons.cli.Option
 class RunServer {
 	private static int defaultPort = 5555
 	private static int defaultSleep = 2000 //milliseconds
-    private static String defaultForwardEmail = ''    
+    private static String defaultForwardEmail = ''
+    private static String defaultForwardHost = "localhost"
+    private static String defaultForwardPort = 25
 	private static String defaultConfig = "./resources/config.groovy"
 	
 	def private availableOptions = [
@@ -15,6 +17,10 @@ class RunServer {
 			[opt: "s", longOpt: 'sleep', args:1, argName:'sleep', 
 				description:"Number of milliseconds to wait while polling (default ${defaultSleep})", default:defaultSleep, isInt:true],
 			[opt: "f", longOpt: 'forward', args:1, argName: 'forward', 
+				description:"If provided, email address to forward a copy of all incoming mail (default is no mail sent)", default:defaultForwardEmail],
+			[opt: "fh", longOpt: 'forwardHost', args:1, argName: 'forwardHost', 
+				description:"If provided, email address to forward a copy of all incoming mail (default is no mail sent)", default:defaultForwardEmail],
+			[opt: "fp", longOpt: 'forwardPort', args:1, argName: 'forwardPort', 
 				description:"If provided, email address to forward a copy of all incoming mail (default is no mail sent)", default:defaultForwardEmail],
             [opt: "c", longOpt: 'config', args:1, argName: 'filename', 
 				description:"Configuration file (default ${defaultConfig})", default:defaultConfig],
@@ -32,8 +38,10 @@ class RunServer {
 		def port = (optionResults.p) ?: defaultPort
 		def sleep = (optionResults.s) ?: defaultSleep
         def forwardEmail = (optionResults.f) ?: defaultForwardEmail
+        def forwardHost = (optionResults.fh) ?: defaultForwardHost
+        def forwardPort = (optionResults.fp) ?: defaultForwardPort
 		
-		MailTestServer instance = new MailTestServer(port, sleep, forwardEmail)
+		MailTestServer instance = new MailTestServer(port, sleep, forwardEmail, forwardHost, forwardPort)
 
 		def writer = new SystemOutWriter()
 		writer.writeln("Starting on port: ${port}")

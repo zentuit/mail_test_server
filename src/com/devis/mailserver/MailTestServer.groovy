@@ -13,7 +13,7 @@ class MailTestServer {
 	private int sleep = 2000 //milliseconds
 	private int count = 0
     private String forwardEmail = ''
-    private String forwardServer = 'localhost'
+    private String forwardHost = 'localhost'
     private String forwardPort = 25
 	
 	def outputClosure = {
@@ -28,10 +28,12 @@ class MailTestServer {
 		initialize()
 	}
 
-	MailTestServer(port, sleep, forwardEmail) {
+	MailTestServer(port, sleep, forwardEmail, forwardHost, forwardPort) {
 		this.port = port
 		this.sleep = sleep
         this.forwardEmail = forwardEmail
+        this.forwardHost = forwardHost
+        this.forwardPort = forwardPort
 		initialize()
 	}
 

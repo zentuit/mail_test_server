@@ -183,7 +183,7 @@ class MailTestServerTests extends GroovyTestCase {
     @Test
     public void test_mail_send_failure() {
         mts.forwardEmail = 'example@example.org'
-        mts.forwardServer = 'localhost'
+        mts.forwardHost = 'localhost'
         mts.forwardPort = 1
         mts.server = new Expando()
 		mts.server.getEmails = { ->
