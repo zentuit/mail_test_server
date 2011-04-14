@@ -15,8 +15,6 @@ class RunServer {
 				description:"Number of milliseconds to wait while polling (default ${defaultSleep})", default:defaultSleep, isInt:true],
 			[opt: "c", longOpt: 'config', args:1, argName: 'filename', 
 				description:"Configuration file (default ${defaultConfig})", default:defaultConfig],
-			[opt: "f", longOpt: 'forward', args:1, argName: 'forward', 
-				description:"Mail port to forward, if needed", isInt:true],
 		]
 
 	def static optionResults = [:]
