@@ -12,7 +12,7 @@ class MailTestServer {
 	private int port = 5555
 	private int sleep = 2000 //milliseconds
 	private int count = 0
-    private String forwardEmail = 'linuxbozo@gmail.com'
+    private String forwardEmail = ''
     private String forwardServer = 'localhost'
     private String forwardPort = 25
 	

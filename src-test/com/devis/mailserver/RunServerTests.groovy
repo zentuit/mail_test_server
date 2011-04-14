@@ -21,6 +21,7 @@ class RunServerTests {
 		
 		assert "6677" == results.port
 		assert !results.sleep
+        assert !results.forward
 	}
 	
 	@Test
@@ -31,16 +32,18 @@ class RunServerTests {
 		
 		assert "6677" == results.port
 		assert !results.sleep
+        assert !results.forward
 	}
 	
 	@Test
-	public void test_port_parameter_with_no_parameter() {
+	public void test_with_no_parameters() {
 		def param = [] as String[]
 		
 		def results = runServer.processParameters(param)
 		
 		assert !results.port
 		assert !results.sleep
+        assert !results.forward
 	}
 	
 	@Test
@@ -51,6 +54,41 @@ class RunServerTests {
 		
 		assert "5000" == results.sleep
 		assert !results.port
+        assert !results.forward
+	}
+    
+	@Test
+	public void test_sleep_parameter_full_name() {
+		def param = ["-sleep", "5000"] as String[]
+		
+		def results = runServer.processParameters(param)
+		
+		assert "5000" == results.sleep
+		assert !results.port
+        assert !results.forward
+	}
+    
+    
+	@Test
+	public void test_forward_parameter() {
+		def param = ["-f", "example@example.org"] as String[]
+		
+		def results = runServer.processParameters(param)
+		
+		assert "example@example.org" == results.forward
+		assert !results.port
+        assert !results.sleep
+	}
+
+	@Test
+	public void test_forward_parameter_full_name() {
+		def param = ["-forward", "example@example.org"] as String[]
+		
+		def results = runServer.processParameters(param)
+		
+		assert "example@example.org" == results.forward
+		assert !results.port
+        assert !results.sleep
 	}
 	
 	@Test
@@ -90,6 +128,16 @@ class RunServerTests {
 		def results = runServer.processConfigFile(filename)
 		
 		assert "3000" == results.sleep
+		
+	}
+    
+	@Test
+	public void test_config_file_forward_setting() {
+		def filename = "./resources-test/just_forward.groovy"
+		
+		def results = runServer.processConfigFile(filename)
+		
+		assert "example@example.org" == results.forward
 		
 	}
 	
