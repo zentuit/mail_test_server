@@ -12,11 +12,13 @@ class MailTestServer {
 	private int port = 5555
 	private int sleep = 2000 //milliseconds
 	private int count = 0
-    private String forward = 'devisqa01@devis.com'
+    private String forwardEmail = 'linuxbozo@gmail.com'
+    private String forwardServer = 'localhost'
+    private String forwardPort = 25
 	
 	def outputClosure = {
         printEmail(it)
-        forwardEmailBody(it)
+        if (forwardEmail) { forwardEmailBody(it) }
     }
 	
 	def server
@@ -26,10 +28,10 @@ class MailTestServer {
 		initialize()
 	}
 
-	MailTestServer(port, sleep, forward) {
+	MailTestServer(port, sleep, forwardEmail) {
 		this.port = port
 		this.sleep = sleep
-        this.forward = forward
+        this.forwardEmail = forwardEmail
 		initialize()
 	}
 
@@ -87,9 +89,9 @@ class MailTestServer {
     
     private def forwardEmailBody(email) {
         def ant = new AntBuilder()
-        ant.mail(mailhost:'localhost', mailport:'25') {
-            from(address:forward)
-            to(address:forward)
+        ant.mail(mailhost:forwardServer, mailport:forwardPort) {
+            from(address:forwardEmail)
+            to(address:forwardEmail)
             message(email)
         }
     }

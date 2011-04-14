@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-class MailTestServerTests {
+class MailTestServerTests extends GroovyTestCase {
 
 	def sep = System.getProperty("line.separator")
 	def writer
@@ -179,4 +179,18 @@ class MailTestServerTests {
 		assert 1 == actual
 		assert 2 == mts.count
 	}
+    
+    @Test
+    public void test_mail_send_failure() {
+        mts.forwardEmail = 'example@example.org'
+        mts.forwardServer = 'localhost'
+        mts.forwardPort = 1
+        mts.server = new Expando()
+		mts.server.getEmails = { ->
+			return data
+		}
+        shouldFail {
+            mts.outputEmails() 
+        }
+    }
 }
